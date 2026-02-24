@@ -14,6 +14,23 @@ This MCP server lets AI assistants interact directly with a ServiceNow instance.
 
 Built with [FastMCP 3.0](https://gofastmcp.com) for decorator-based tool definitions and dual transport support.
 
+## Native vs Community
+
+ServiceNow shipped a native MCP Server in Zurich (2025). Here's when to use each:
+
+| | Native (Zurich+) | This project |
+|---|---|---|
+| **SN version** | Zurich+ only | Any version (Tokyo+) |
+| **Entitlement** | Requires Now Assist SKU | None (MIT, free) |
+| **Auth model** | OAuth 2.1 + PKCE via AI Control Tower | OAuth 2.1 + PKCE via FastMCP proxy |
+| **Governance** | AI Control Tower policies | Self-managed |
+| **Table access** | Governed by CT config | Full table API access |
+| **AI models** | Now Assist models + approved | Any MCP client (Claude, GPT, etc.) |
+| **Custom tools** | Requires SN development | Python — add tools in minutes |
+
+**Use native** if you're on Zurich+ with Now Assist and need AI Control Tower governance.
+**Use this** if you're on an older version, don't have the entitlement, need custom table access, or want to use any AI model.
+
 ## Quick Start
 
 ```bash
@@ -146,7 +163,7 @@ docker run -p 8080:8080 \
   -e SERVICENOW_PASSWORD=your-password \
   mcp-servicenow
 
-# Deploy to Cloud Run (requires GCP authentication)
+# Deploy to Cloud Run with global creds (requires GCP IAM for access)
 gcloud run deploy servicenow-mcp \
   --source . \
   --region us-east1 \
@@ -156,6 +173,18 @@ gcloud run deploy servicenow-mcp \
   --set-env-vars "SERVICENOW_AUTH_TYPE=basic" \
   --set-env-vars "SERVICENOW_USERNAME=..." \
   --set-env-vars "SERVICENOW_PASSWORD=..." \
+  --set-env-vars "MCP_TRANSPORT=streamable-http"
+
+# Deploy to Cloud Run with OAuth (per-user auth, publicly accessible)
+gcloud run deploy servicenow-mcp \
+  --source . \
+  --region us-east1 \
+  --port 8080 \
+  --allow-unauthenticated \
+  --set-env-vars "SERVICENOW_INSTANCE_URL=..." \
+  --set-env-vars "MCP_OAUTH_CLIENT_ID=..." \
+  --set-env-vars "MCP_OAUTH_CLIENT_SECRET=..." \
+  --set-env-vars "MCP_BASE_URL=https://servicenow-mcp-xxxxx.run.app" \
   --set-env-vars "MCP_TRANSPORT=streamable-http"
 ```
 
@@ -176,6 +205,40 @@ curl -X POST https://your-service-url.run.app/mcp \
   -d '{"jsonrpc":"2.0","method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}},"id":1}'
 ```
 
+## Security Model
+
+Three deployment modes with increasing security:
+
+| Mode | MCP Endpoint Auth | SN Backend Auth | Use Case |
+|------|------------------|-----------------|----------|
+| **stdio** | None (local process) | Global creds (env vars) | Claude Desktop, Claude Code |
+| **HTTP (open)** | None | Global creds (env vars) | Development, testing |
+| **HTTP + OAuth** | OAuth 2.1 + PKCE | Per-user SN token | Production, Cloud Run |
+
+### OAuth 2.1 + PKCE (recommended for production)
+
+When deployed with OAuth, each user authenticates with their own ServiceNow credentials. The server acts as an OAuth proxy: it handles DCR and consent locally, redirects users to ServiceNow for login, then exchanges the auth code for SN tokens server-side.
+
+**Defense in depth:** OAuth 2.1 + PKCE on the MCP endpoint, per-user SN ACLs on every API call, encrypted token storage, CSRF-protected consent screen.
+
+**Setup:**
+
+1. In ServiceNow, go to **System OAuth > Application Registry** and create an OAuth API endpoint for external clients
+2. Set the redirect URI to `{your-server-url}/auth/callback`
+3. Deploy with OAuth env vars:
+
+```bash
+SERVICENOW_INSTANCE_URL=https://your-instance.service-now.com
+MCP_OAUTH_CLIENT_ID=<from Application Registry>
+MCP_OAUTH_CLIENT_SECRET=<from Application Registry>
+MCP_BASE_URL=https://your-mcp-server.run.app
+MCP_TRANSPORT=streamable-http
+```
+
+4. In Claude.ai, add the server URL as an MCP connector — the OAuth flow handles the rest
+
+**Requires:** ServiceNow San Diego+ (2022) for PKCE support.
+
 ## Configuration
 
 All settings can be passed as CLI args or environment variables. See `.env.example`.
@@ -191,6 +254,9 @@ All settings can be passed as CLI args or environment variables. See `.env.examp
 | `SERVICENOW_API_KEY` | `--api-key` | API key for api_key auth |
 | `MCP_TRANSPORT` | `--transport` | `stdio` (default) or `streamable-http` |
 | `PORT` | `--port` | HTTP port (default: 8080) |
+| `MCP_OAUTH_CLIENT_ID` | `--mcp-oauth-client-id` | SN OAuth app client ID for MCP endpoint auth |
+| `MCP_OAUTH_CLIENT_SECRET` | `--mcp-oauth-client-secret` | SN OAuth app client secret for MCP endpoint auth |
+| `MCP_BASE_URL` | `--mcp-base-url` | Public URL of this MCP server |
 
 ## Development
 
@@ -215,8 +281,9 @@ ruff check src/ tests/
 
 - **Phase 1** &#x2705; Foundation — 18 tools, OAuth retry, structured error handling
 - **Phase 2** &#x2705; Remote access — FastMCP 3.0, Streamable HTTP, Cloud Run deployment
-- **Phase 3** &#x1F51C; AI workflows — incident triage prompts, change drafting templates, CMDB exploration resources
-- **Phase 4** &#x1F51C; Distribution — PyPI package, MCP Registry listing, one-click install
+- **Phase 3** &#x2705; Security — OAuth 2.1 + PKCE proxy, per-user SN auth, matches native Zurich model
+- **Phase 4** &#x1F51C; AI workflows — incident triage prompts, change drafting templates, CMDB exploration resources
+- **Phase 5** &#x1F51C; Distribution — PyPI package, MCP Registry listing, one-click install
 
 ## License
 
