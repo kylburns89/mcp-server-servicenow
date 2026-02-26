@@ -66,28 +66,7 @@ mcp-server-servicenow \
   --password your-password
 ```
 
-### Claude Desktop
-
-Add to your `claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "servicenow": {
-      "command": "uvx",
-      "args": ["mcp-server-servicenow"],
-      "env": {
-        "SERVICENOW_INSTANCE_URL": "https://your-instance.service-now.com",
-        "SERVICENOW_AUTH_TYPE": "basic",
-        "SERVICENOW_USERNAME": "admin",
-        "SERVICENOW_PASSWORD": "your-password"
-      }
-    }
-  }
-}
-```
-
-### Claude Code
+### Claude Code CLI
 
 ```bash
 claude mcp add servicenow -- uvx mcp-server-servicenow \
@@ -250,7 +229,93 @@ MCP_TRANSPORT=streamable-http
 
 **Requires:** ServiceNow San Diego+ (2022) for PKCE support.
 
-## Configuration
+## Configuration Examples
+
+Copy `.mcp.json.example` to `.mcp.json` and fill in your credentials.
+
+### Claude Code (basic auth)
+
+```json
+{
+  "mcpServers": {
+    "servicenow": {
+      "command": "uvx",
+      "args": ["mcp-server-servicenow"],
+      "env": {
+        "SERVICENOW_INSTANCE_URL": "https://your-instance.service-now.com",
+        "SERVICENOW_AUTH_TYPE": "basic",
+        "SERVICENOW_USERNAME": "admin",
+        "SERVICENOW_PASSWORD": "your-password"
+      }
+    }
+  }
+}
+```
+
+### Claude Code (OAuth password grant)
+
+```json
+{
+  "mcpServers": {
+    "servicenow": {
+      "command": "uvx",
+      "args": ["mcp-server-servicenow"],
+      "env": {
+        "SERVICENOW_INSTANCE_URL": "https://your-instance.service-now.com",
+        "SERVICENOW_AUTH_TYPE": "oauth",
+        "SERVICENOW_CLIENT_ID": "your-client-id",
+        "SERVICENOW_CLIENT_SECRET": "your-client-secret",
+        "SERVICENOW_USERNAME": "admin",
+        "SERVICENOW_PASSWORD": "your-password"
+      }
+    }
+  }
+}
+```
+
+### Claude Desktop (basic auth)
+
+Add to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "servicenow": {
+      "command": "uvx",
+      "args": ["mcp-server-servicenow"],
+      "env": {
+        "SERVICENOW_INSTANCE_URL": "https://your-instance.service-now.com",
+        "SERVICENOW_AUTH_TYPE": "basic",
+        "SERVICENOW_USERNAME": "admin",
+        "SERVICENOW_PASSWORD": "your-password"
+      }
+    }
+  }
+}
+```
+
+### Claude Desktop (OAuth password grant)
+
+```json
+{
+  "mcpServers": {
+    "servicenow": {
+      "command": "uvx",
+      "args": ["mcp-server-servicenow"],
+      "env": {
+        "SERVICENOW_INSTANCE_URL": "https://your-instance.service-now.com",
+        "SERVICENOW_AUTH_TYPE": "oauth",
+        "SERVICENOW_CLIENT_ID": "your-client-id",
+        "SERVICENOW_CLIENT_SECRET": "your-client-secret",
+        "SERVICENOW_USERNAME": "admin",
+        "SERVICENOW_PASSWORD": "your-password"
+      }
+    }
+  }
+}
+```
+
+## Configuration Reference
 
 All settings can be passed as CLI args or environment variables. See `.env.example`.
 
