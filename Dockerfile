@@ -4,4 +4,4 @@ COPY pyproject.toml README.md ./
 COPY src/ src/
 RUN pip install --no-cache-dir .
 EXPOSE 8080
-CMD ["mcp-servicenow", "--transport", "streamable-http", "--port", "8080"]
+CMD ["mcp-server-servicenow", "--transport", "streamable-http", "--port", "8080"]

@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "mcp-servicenow"
+name = "mcp-server-servicenow"
 version = "0.3.0"
 description = "MCP server for ServiceNow - table, CMDB, system, and update set operations"
 readme = "README.md"
@@ -11,6 +11,13 @@ requires-python = ">=3.11"
 license = {text = "MIT"}
 authors = [
     {name = "Josh Schuller"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
     "fastmcp>=2.0.0",
@@ -22,8 +29,13 @@ dependencies = [
     "httpx>=0.25.0",
 ]
 
+[project.urls]
+Homepage = "https://github.com/jschuller/mcp-server-servicenow"
+Repository = "https://github.com/jschuller/mcp-server-servicenow"
+Issues = "https://github.com/jschuller/mcp-server-servicenow/issues"
+
 [project.scripts]
-mcp-servicenow = "servicenow_mcp.cli:main"
+mcp-server-servicenow = "servicenow_mcp.cli:main"
 
 [project.optional-dependencies]
 dev = ["pytest>=7.0", "pytest-mock>=3.0", "pytest-asyncio>=0.23.0", "ruff>=0.4.0"]

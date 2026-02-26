@@ -31,23 +31,33 @@ ServiceNow shipped a native MCP Server in Zurich (2025). Here's when to use each
 **Use native** if you're on Zurich+ with Now Assist and need AI Control Tower governance.
 **Use this** if you're on an older version, don't have the entitlement, need custom table access, or want to use any AI model.
 
+## Install
+
+```bash
+# From PyPI
+pip install mcp-server-servicenow
+
+# Or run directly with uvx (no install needed)
+uvx mcp-server-servicenow --help
+```
+
 ## Quick Start
 
 ```bash
-# Clone and install
+# From source
 git clone https://github.com/jschuller/mcp-server-servicenow.git
 cd mcp-server-servicenow
 pip install -e .
 
 # Run with stdio (Claude Desktop / Claude Code)
-mcp-servicenow \
+mcp-server-servicenow \
   --instance-url https://your-instance.service-now.com \
   --auth-type basic \
   --username admin \
   --password your-password
 
 # Or run with HTTP (remote access / Cloud Run)
-mcp-servicenow \
+mcp-server-servicenow \
   --transport streamable-http \
   --port 8080 \
   --instance-url https://your-instance.service-now.com \
@@ -64,7 +74,8 @@ Add to your `claude_desktop_config.json`:
 {
   "mcpServers": {
     "servicenow": {
-      "command": "mcp-servicenow",
+      "command": "uvx",
+      "args": ["mcp-server-servicenow"],
       "env": {
         "SERVICENOW_INSTANCE_URL": "https://your-instance.service-now.com",
         "SERVICENOW_AUTH_TYPE": "basic",
@@ -79,7 +90,7 @@ Add to your `claude_desktop_config.json`:
 ### Claude Code
 
 ```bash
-claude mcp add servicenow -- mcp-servicenow \
+claude mcp add servicenow -- uvx mcp-server-servicenow \
   --instance-url https://your-instance.service-now.com \
   --auth-type basic --username admin --password your-password
 ```
@@ -153,7 +164,7 @@ Claude / MCP Client
 
 ```bash
 # Build
-docker build -t mcp-servicenow .
+docker build -t mcp-server-servicenow .
 
 # Run locally
 docker run -p 8080:8080 \
@@ -161,7 +172,7 @@ docker run -p 8080:8080 \
   -e SERVICENOW_AUTH_TYPE=basic \
   -e SERVICENOW_USERNAME=admin \
   -e SERVICENOW_PASSWORD=your-password \
-  mcp-servicenow
+  mcp-server-servicenow
 
 # Deploy to Cloud Run with global creds (requires GCP IAM for access)
 gcloud run deploy servicenow-mcp \
@@ -282,8 +293,8 @@ ruff check src/ tests/
 - **Phase 1** &#x2705; Foundation — 18 tools, OAuth retry, structured error handling
 - **Phase 2** &#x2705; Remote access — FastMCP 3.0, Streamable HTTP, Cloud Run deployment
 - **Phase 3** &#x2705; Security — OAuth 2.1 + PKCE proxy, per-user SN auth, matches native Zurich model
-- **Phase 4** &#x1F51C; AI workflows — incident triage prompts, change drafting templates, CMDB exploration resources
-- **Phase 5** &#x1F51C; Distribution — PyPI package, MCP Registry listing, one-click install
+- **Phase 4** &#x1F51C; Skills & workflows — CMDB Data Foundations, incident triage, change management
+- **Phase 5** &#x1F51C; Distribution — PyPI package, MCP Registry listing, Claude Code skills
 
 ## License
 

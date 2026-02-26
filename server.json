@@ -1,0 +1,22 @@
+{
+  "$schema": "https://registry.modelcontextprotocol.io/schemas/server.json",
+  "name": "io.github.jschuller/mcp-server-servicenow",
+  "title": "ServiceNow MCP Server",
+  "description": "18 MCP tools for ServiceNow — incidents, CMDB, update sets, system ops. OAuth 2.1 + PKCE, any SN version (Tokyo+), any MCP client.",
+  "version": "0.3.0",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "mcp-server-servicenow",
+      "runtime": "python",
+      "transport": ["stdio"]
+    }
+  ],
+  "environmentVariables": [
+    { "name": "SERVICENOW_INSTANCE_URL", "required": true, "description": "ServiceNow instance URL" },
+    { "name": "SERVICENOW_AUTH_TYPE", "required": true, "description": "Auth type: basic, oauth, or api_key" },
+    { "name": "SERVICENOW_USERNAME", "required": false, "description": "Username for basic or OAuth auth" },
+    { "name": "SERVICENOW_PASSWORD", "required": false, "description": "Password for basic or OAuth auth" }
+  ],
+  "repository": "https://github.com/jschuller/mcp-server-servicenow"
+}
