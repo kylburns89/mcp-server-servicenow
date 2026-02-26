@@ -378,7 +378,7 @@ ruff check src/ tests/
 - **Phase 2** &#x2705; Remote access — FastMCP 3.0, Streamable HTTP, Cloud Run deployment
 - **Phase 3** &#x2705; Security — OAuth 2.1 + PKCE proxy, per-user SN auth, matches native Zurich model
 - **Phase 4** &#x1F51C; Skills & workflows — CMDB Data Foundations, incident triage, change management
-- **Phase 5** &#x1F6A7; Distribution — PyPI package, MCP Registry listing, Claude Code skills
+- **Phase 5** &#x2705; Distribution — PyPI package, [MCP Registry](https://registry.modelcontextprotocol.io), automated publish workflows
 
 ## License
 
