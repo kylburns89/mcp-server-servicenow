@@ -1,0 +1,26 @@
+{
+  "name": "servicenow",
+  "version": "0.4.0",
+  "description": "ServiceNow admin toolkit — incidents, CMDB, update sets, table explorer. 18 MCP tools + 4 guided skills.",
+  "author": {
+    "name": "Josh Schuller"
+  },
+  "homepage": "https://github.com/jschuller/mcp-server-servicenow",
+  "repository": "https://github.com/jschuller/mcp-server-servicenow",
+  "license": "MIT",
+  "keywords": ["servicenow", "itsm", "cmdb", "incidents", "update-sets", "mcp"],
+  "mcpServers": {
+    "servicenow": {
+      "command": "uvx",
+      "args": ["mcp-server-servicenow"],
+      "env": {
+        "SERVICENOW_INSTANCE_URL": "${SERVICENOW_INSTANCE_URL}",
+        "SERVICENOW_AUTH_TYPE": "${SERVICENOW_AUTH_TYPE}",
+        "SERVICENOW_USERNAME": "${SERVICENOW_USERNAME}",
+        "SERVICENOW_PASSWORD": "${SERVICENOW_PASSWORD}",
+        "SERVICENOW_CLIENT_ID": "${SERVICENOW_CLIENT_ID}",
+        "SERVICENOW_CLIENT_SECRET": "${SERVICENOW_CLIENT_SECRET}"
+      }
+    }
+  }
+}

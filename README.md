@@ -385,12 +385,58 @@ This project ships 4 Claude Code skills in `.claude/skills/` — guided workflow
 
 The **update set reviewer** is a unique differentiator — no other open-source ServiceNow MCP server provides guided update set review workflows with risk categorization and pre-promotion checklists.
 
+## Claude Code Plugin
+
+Install as a Claude Code plugin for zero-config setup — the MCP server, skills, slash commands, and admin agent are bundled together.
+
+### Prerequisites
+
+Set these environment variables (or add them to your shell profile):
+
+```bash
+export SERVICENOW_INSTANCE_URL="https://your-instance.service-now.com"
+export SERVICENOW_AUTH_TYPE="basic"  # or "oauth"
+export SERVICENOW_USERNAME="admin"
+export SERVICENOW_PASSWORD="your-password"
+# For OAuth only:
+export SERVICENOW_CLIENT_ID="your-client-id"
+export SERVICENOW_CLIENT_SECRET="your-client-secret"
+```
+
+### Install from Git
+
+```bash
+claude plugin add --from https://github.com/jschuller/mcp-server-servicenow
+```
+
+### Install Locally (development)
+
+```bash
+claude --plugin-dir /path/to/mcp-server-servicenow
+```
+
+### Slash Commands
+
+| Command | Description |
+|---------|-------------|
+| `/servicenow:triage` | Triage incidents — list, investigate, assess priority, analyze trends |
+| `/servicenow:cmdb` | Explore CMDB — CI hierarchy, dependencies, health, CSDM taxonomy |
+| `/servicenow:review-update-set` | Review update sets — deep review, compare, pre-promotion checks |
+| `/servicenow:explore-table` | Explore tables — schema, fields, data profiling, table search |
+
+### Agent
+
+The `servicenow-admin` agent handles complex multi-step tasks autonomously (CMDB audits, incident trend reports, batch update set reviews). Claude can spawn it as a background worker for long-running analysis.
+
+> **Note:** The plugin auto-configures the MCP server — no manual `.mcp.json` setup required.
+
 ## Roadmap
 
 - **Phase 1** &#x2705; Foundation — 18 tools, OAuth retry, structured error handling
 - **Phase 2** &#x2705; Remote access — FastMCP 3.0, Streamable HTTP, Cloud Run deployment
 - **Phase 3** &#x2705; Security — OAuth 2.1 + PKCE proxy, per-user SN auth, matches native Zurich model
 - **Phase 4** &#x2705; Skills & workflows — 4 Claude Code skills (CMDB, table explorer, update set reviewer, incident triage)
+- **Phase 4.5** &#x2705; Plugin packaging — Claude Code plugin with slash commands, admin agent, zero-config install
 - **Phase 5** &#x2705; Distribution — PyPI package, [MCP Registry](https://registry.modelcontextprotocol.io), automated publish workflows
 
 ## License
