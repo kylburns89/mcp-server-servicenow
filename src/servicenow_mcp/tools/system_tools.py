@@ -14,7 +14,7 @@ from servicenow_mcp.utils.http import parse_json_response
 logger = logging.getLogger(__name__)
 
 
-@mcp.tool()
+@mcp.tool(tags={"read", "admin"})
 def get_system_properties(
     query: Annotated[Optional[str], Field(description="Filter query (e.g., 'name=glide.servlet.uri' or 'nameLIKEglide')")] = None,
     limit: Annotated[int, Field(ge=1, le=100, description="Maximum number of properties to return")] = 20,
@@ -36,7 +36,7 @@ def get_system_properties(
     return {"count": len(result), "properties": result}
 
 
-@mcp.tool()
+@mcp.tool(tags={"read", "admin"})
 def get_current_user(
     fields: Annotated[Optional[str], Field(description="Comma-separated fields to return (default: user_name,name,email,roles)")] = None,
 ) -> Dict[str, Any]:
@@ -74,7 +74,7 @@ def get_current_user(
     return {}
 
 
-@mcp.tool()
+@mcp.tool(tags={"read", "admin"})
 def get_table_schema(
     table_name: Annotated[str, Field(description="The table name to get schema for")],
     limit: Annotated[int, Field(ge=1, le=500, description="Maximum number of fields to return")] = 50,

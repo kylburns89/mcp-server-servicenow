@@ -91,6 +91,11 @@ def parse_args() -> argparse.Namespace:
         default=os.environ.get("MCP_BASE_URL"),
         help="Public URL of this MCP server (e.g. https://my-server.run.app)",
     )
+    parser.add_argument(
+        "--mcp-static-tokens",
+        default=os.environ.get("MCP_STATIC_TOKENS"),
+        help="Comma-separated static bearer tokens for CI/CD auth (uses service account credentials)",
+    )
 
     return parser.parse_args()
 
@@ -148,6 +153,23 @@ def create_config(args: argparse.Namespace) -> ServerConfig:
     )
 
 
+def _parse_static_tokens(args: argparse.Namespace) -> dict[str, dict[str, str]] | None:
+    """Parse comma-separated static bearer tokens into StaticTokenVerifier format.
+
+    Returns None if no tokens configured, otherwise a dict mapping each token
+    to its metadata (client_id for logging/identification).
+    """
+    raw = getattr(args, "mcp_static_tokens", None)
+    if not raw:
+        return None
+    tokens = {}
+    for i, token in enumerate(raw.split(","), 1):
+        token = token.strip()
+        if token:
+            tokens[token] = {"client_id": f"static-client-{i}", "scopes": []}
+    return tokens or None
+
+
 def _has_mcp_oauth(args: argparse.Namespace) -> bool:
     """Check if MCP endpoint OAuth is configured."""
     return bool(
@@ -195,7 +217,9 @@ def main() -> None:
 
         init_services(config, require_auth_manager=not use_mcp_oauth)
 
-        # Wire up OAuth proxy if configured
+        # Wire up MCP endpoint auth
+        static_tokens = _parse_static_tokens(args)
+
         if use_mcp_oauth:
             from servicenow_mcp.auth.sn_oauth_provider import ServiceNowProvider
 
@@ -205,8 +229,28 @@ def main() -> None:
                 client_secret=args.mcp_oauth_client_secret,
                 base_url=args.mcp_base_url,
             )
-            mcp.auth = provider
-            logger.info("MCP endpoint auth: OAuth 2.1 + PKCE (per-user SN tokens)")
+
+            if static_tokens:
+                from fastmcp.server.auth import MultiAuth
+                from fastmcp.server.auth.providers.jwt import StaticTokenVerifier
+
+                static_verifier = StaticTokenVerifier(tokens=static_tokens)
+                mcp.auth = MultiAuth(server=provider, verifiers=[static_verifier])
+                logger.info(
+                    "MCP endpoint auth: MultiAuth (OAuth 2.1 + PKCE + %d static tokens)",
+                    len(static_tokens),
+                )
+            else:
+                mcp.auth = provider
+                logger.info("MCP endpoint auth: OAuth 2.1 + PKCE (per-user SN tokens)")
+
+        elif static_tokens and args.transport != "stdio":
+            from fastmcp.server.auth import MultiAuth
+            from fastmcp.server.auth.providers.jwt import StaticTokenVerifier
+
+            static_verifier = StaticTokenVerifier(tokens=static_tokens)
+            mcp.auth = MultiAuth(verifiers=[static_verifier])
+            logger.info("MCP endpoint auth: %d static bearer tokens", len(static_tokens))
 
         # Import tool modules to trigger @mcp.tool() registration
         import servicenow_mcp.tools.table_tools  # noqa: F401

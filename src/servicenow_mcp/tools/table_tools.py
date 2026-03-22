@@ -14,7 +14,7 @@ from servicenow_mcp.utils.http import parse_json_response
 logger = logging.getLogger(__name__)
 
 
-@mcp.tool()
+@mcp.tool(tags={"read", "table"})
 def list_records(
     table_name: Annotated[str, Field(description="The ServiceNow table name (e.g., 'incident', 'sys_user', 'cmdb_ci')")],
     query: Annotated[Optional[str], Field(description="Encoded query string (e.g., 'active=true^priority=1')")] = None,
@@ -46,7 +46,7 @@ def list_records(
     return {"count": len(result), "records": result}
 
 
-@mcp.tool()
+@mcp.tool(tags={"read", "table"})
 def get_record(
     table_name: Annotated[str, Field(description="The ServiceNow table name")],
     sys_id: Annotated[str, Field(description="The sys_id of the record")],
@@ -65,7 +65,7 @@ def get_record(
     return data.get("result", {})
 
 
-@mcp.tool()
+@mcp.tool(tags={"write", "table"})
 def create_record(
     table_name: Annotated[str, Field(description="The ServiceNow table name")],
     data: Annotated[Dict[str, Any], Field(description="Record field values as key-value pairs")],
@@ -80,7 +80,7 @@ def create_record(
     return {"sys_id": result.get("sys_id"), "record": result}
 
 
-@mcp.tool()
+@mcp.tool(tags={"write", "table"})
 def update_record(
     table_name: Annotated[str, Field(description="The ServiceNow table name")],
     sys_id: Annotated[str, Field(description="The sys_id of the record to update")],
@@ -96,7 +96,7 @@ def update_record(
     return {"sys_id": result.get("sys_id"), "record": result}
 
 
-@mcp.tool()
+@mcp.tool(tags={"write", "table"})
 def delete_record(
     table_name: Annotated[str, Field(description="The ServiceNow table name")],
     sys_id: Annotated[str, Field(description="The sys_id of the record to delete")],

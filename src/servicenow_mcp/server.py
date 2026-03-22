@@ -6,6 +6,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from fastmcp import FastMCP
+from fastmcp.server.middleware.response_limiting import ResponseLimitingMiddleware
 
 from servicenow_mcp.auth.auth_manager import AuthManager
 from servicenow_mcp.utils.config import ServerConfig
@@ -19,6 +20,7 @@ _config: ServerConfig | None = None
 _auth_manager: AuthManager | None = None
 
 mcp = FastMCP("servicenow-mcp")
+mcp.add_middleware(ResponseLimitingMiddleware(max_size=500_000))
 
 
 def init_services(config: ServerConfig, *, require_auth_manager: bool = True) -> None:

@@ -14,7 +14,7 @@ from servicenow_mcp.utils.http import parse_json_response
 logger = logging.getLogger(__name__)
 
 
-@mcp.tool()
+@mcp.tool(tags={"read", "cmdb"})
 def list_ci(
     class_name: Annotated[str, Field(description="CMDB class name (e.g., 'cmdb_ci', 'cmdb_ci_server', 'cmdb_ci_computer')")] = "cmdb_ci",
     query: Annotated[Optional[str], Field(description="Encoded query string (e.g., 'operational_status=1')")] = None,
@@ -41,7 +41,7 @@ def list_ci(
     return {"count": len(result), "class": class_name, "records": result}
 
 
-@mcp.tool()
+@mcp.tool(tags={"read", "cmdb"})
 def get_ci(
     sys_id: Annotated[str, Field(description="The sys_id of the CI")],
     class_name: Annotated[str, Field(description="CMDB class name")] = "cmdb_ci",
@@ -55,7 +55,7 @@ def get_ci(
     return data.get("result", {})
 
 
-@mcp.tool()
+@mcp.tool(tags={"write", "cmdb"})
 def create_ci(
     data: Annotated[Dict[str, Any], Field(description="CI attributes as key-value pairs (must include 'name')")],
     class_name: Annotated[str, Field(description="CMDB class name")] = "cmdb_ci",
@@ -70,7 +70,7 @@ def create_ci(
     return {"sys_id": result.get("sys_id"), "record": result}
 
 
-@mcp.tool()
+@mcp.tool(tags={"write", "cmdb"})
 def update_ci(
     sys_id: Annotated[str, Field(description="The sys_id of the CI to update")],
     data: Annotated[Dict[str, Any], Field(description="CI attributes to update")],
@@ -86,7 +86,7 @@ def update_ci(
     return {"sys_id": result.get("sys_id"), "record": result}
 
 
-@mcp.tool()
+@mcp.tool(tags={"read", "cmdb"})
 def get_ci_relationships(
     sys_id: Annotated[str, Field(description="The sys_id of the CI")],
     relation_type: Annotated[Optional[str], Field(description="Filter by relationship type sys_id")] = None,

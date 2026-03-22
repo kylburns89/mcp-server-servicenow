@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import logging
 
+import httpx
 from pydantic import AnyHttpUrl
 
 from fastmcp.server.auth.oauth_proxy import OAuthProxy
@@ -76,9 +77,12 @@ class ServiceNowProvider(OAuthProxy):
         """
         instance_url = instance_url.rstrip("/")
 
+        shared_http_client = httpx.AsyncClient(timeout=timeout_seconds)
+
         token_verifier = ServiceNowTokenVerifier(
             instance_url=instance_url,
             timeout_seconds=timeout_seconds,
+            http_client=shared_http_client,
         )
 
         super().__init__(

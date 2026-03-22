@@ -14,7 +14,7 @@ from servicenow_mcp.utils.http import parse_json_response
 logger = logging.getLogger(__name__)
 
 
-@mcp.tool()
+@mcp.tool(tags={"read", "updateset"})
 def list_update_sets(
     query: Annotated[Optional[str], Field(description="Filter query (e.g., 'state=in progress', 'nameLIKErelease')")] = None,
     state: Annotated[Optional[str], Field(description="Filter by state: 'in progress', 'complete', 'ignore', or 'default'")] = None,
@@ -42,7 +42,7 @@ def list_update_sets(
     return {"count": len(result), "update_sets": result}
 
 
-@mcp.tool()
+@mcp.tool(tags={"read", "updateset"})
 def get_update_set(
     sys_id: Annotated[str, Field(description="The sys_id of the update set")],
 ) -> Dict[str, Any]:
@@ -55,7 +55,7 @@ def get_update_set(
     return data.get("result", {})
 
 
-@mcp.tool()
+@mcp.tool(tags={"write", "updateset"})
 def create_update_set(
     name: Annotated[str, Field(description="Name of the update set")],
     description: Annotated[Optional[str], Field(description="Description of the update set")] = None,
@@ -77,7 +77,7 @@ def create_update_set(
     return {"sys_id": result.get("sys_id"), "name": result.get("name"), "record": result}
 
 
-@mcp.tool()
+@mcp.tool(tags={"write", "updateset"})
 def set_current_update_set(
     sys_id: Annotated[str, Field(description="The sys_id of the update set to make current")],
 ) -> str:
@@ -118,7 +118,7 @@ def set_current_update_set(
     return f"Current update set changed to '{name}' ({sys_id})"
 
 
-@mcp.tool()
+@mcp.tool(tags={"read", "updateset"})
 def list_update_set_changes(
     update_set_sys_id: Annotated[str, Field(description="The sys_id of the update set")],
     limit: Annotated[int, Field(ge=1, le=500, description="Maximum number of changes to return")] = 50,
