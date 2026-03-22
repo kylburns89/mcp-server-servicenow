@@ -3,7 +3,7 @@
   "name": "io.github.jschuller/mcp-server-servicenow",
   "title": "ServiceNow MCP Server",
   "description": "19 tools + 5 resources for ServiceNow: CMDB, update sets, tables. OAuth 2.1, Tokyo+.",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "repository": {
     "url": "https://github.com/jschuller/mcp-server-servicenow",
     "source": "github"
@@ -12,7 +12,7 @@
     {
       "registryType": "pypi",
       "identifier": "mcp-server-servicenow",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "transport": { "type": "stdio" },
       "environmentVariables": [
         { "name": "SERVICENOW_INSTANCE_URL", "isRequired": true, "description": "ServiceNow instance URL", "format": "string" },

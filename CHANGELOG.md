@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-03-22
+
+### Fixed
+- Added MCP Registry ownership tag (`mcp-name`) to README for registry validation
+- Pre-publish polish: ruff format (17 files), sdist excludes (960KB → 27KB), PyPI image URL fix, keywords
+
 ## [0.5.0] - 2026-03-22
 
 ### Added
