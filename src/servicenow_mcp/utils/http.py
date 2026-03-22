@@ -9,9 +9,30 @@ from servicenow_mcp.auth.auth_manager import AuthManager
 
 logger = logging.getLogger(__name__)
 
+# ServiceNow response headers that aid debugging
+_DIAGNOSTIC_HEADERS = ("X-Is-Logged-In", "X-Transaction-ID")
+
 
 class ServiceNowAPIError(Exception):
     """Raised when the ServiceNow API returns an unexpected response."""
+
+
+def _error_context(response: "requests.Response") -> str:
+    """Extract diagnostic context from a ServiceNow error response.
+
+    Returns a string with response body preview and key headers.
+    """
+    parts: list[str] = []
+
+    body = response.text[:500] if response.text else None
+    if body:
+        parts.append(f"Response: {body}")
+
+    diag = {h: response.headers[h] for h in _DIAGNOSTIC_HEADERS if h in response.headers}
+    if diag:
+        parts.append(f"Headers: {diag}")
+
+    return " | ".join(parts) if parts else ""
 
 
 def api_request(
@@ -72,9 +93,11 @@ def api_request(
     # On 401, attempt one token refresh and retry (OAuth only, not for bearer tokens)
     if response.status_code == 401:
         if bearer_token:
+            ctx = _error_context(response)
             raise ServiceNowAPIError(
                 f"Authentication failed (401). The per-user OAuth token may be expired. "
                 f"URL: {url}"
+                + (f" | {ctx}" if ctx else "")
             )
         if auth_manager and auth_manager.config.type.value == "oauth":
             logger.info("Got 401, attempting OAuth token refresh and retry")
@@ -103,30 +126,33 @@ def api_request(
                 ) from e
 
             if response.status_code == 401:
+                ctx = _error_context(response)
                 raise ServiceNowAPIError(
                     f"Authentication failed (401) even after token refresh. "
                     f"Check your OAuth credentials. URL: {url}"
+                    + (f" | {ctx}" if ctx else "")
                 )
         else:
+            ctx = _error_context(response)
             raise ServiceNowAPIError(
                 f"Authentication failed (401). Check your username/password. "
                 f"URL: {url}"
+                + (f" | {ctx}" if ctx else "")
             )
 
-    # TODO (Phase 2): Add proactive token refresh — refresh 5 minutes before
-    # token expiry instead of waiting for a 401. Note: ServiceNow has a known
-    # bug where refresh_token grant may return invalid tokens; always fall back
-    # to password grant if refresh fails.
-
     if response.status_code == 403:
+        ctx = _error_context(response)
         raise ServiceNowAPIError(
             f"Access denied (403). The user may lack permissions for this API. "
             f"URL: {url}"
+            + (f" | {ctx}" if ctx else "")
         )
     if response.status_code == 404:
+        ctx = _error_context(response)
         raise ServiceNowAPIError(
             f"Not found (404). The table or record may not exist. "
             f"URL: {url}"
+            + (f" | {ctx}" if ctx else "")
         )
 
     # For other errors, raise with response body context

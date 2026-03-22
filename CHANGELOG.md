@@ -15,6 +15,10 @@
 - `.env.test` support for integration tests (auto-loaded by dotenv, gitignored)
 - 7 new integration smoke tests: aggregate_records (with/without group_by) + 5 resource read tests
 
+### Improved
+- **Enriched error responses** — 401/403/404 errors now include ServiceNow response body (500 char preview) and diagnostic headers (`X-Is-Logged-In`, `X-Transaction-ID`). Pinpoints exact cause (e.g., `WebServicePolicyValidator`, missing ACL, wrong table name).
+- Expanded TROUBLESHOOTING.md with error message interpretation guide
+
 ### Fixed
 - `aggregate_records` group_by return type — Stats API returns list, wrapped as `{"count": N, "groups": [...]}`
 - `__init__.py` version synced with pyproject.toml (was stuck at 0.3.0)
