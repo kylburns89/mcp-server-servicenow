@@ -8,3 +8,5 @@ build/
 .eggs/
 .pytest_cache/
 STRATEGY.md
+docs/optimization-prompt.md
+docs/mcp-enhancement-roadmap.md
