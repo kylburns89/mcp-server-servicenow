@@ -1,0 +1,18 @@
+{
+  "name": "ServiceNow Tools",
+  "owner": {
+    "name": "SMPP Team",
+    "email": "kyle.burns@jamf.com"
+  },
+  "plugins": [
+    {
+      "name": "ServiceNow MCP Server Plugin",
+      "source": "https://github.com/kylburns89/mcp-server-servicenow/blob/main/.claude-plugin/plugin.json",
+      "description": "MCP server for ServiceNow — 19 tools for incidents, CMDB, update sets.",
+      "version": "0.4.0",
+      "author": {
+        "name": "jschuller @ github"
+      }
+    }
+  ]
+}
