@@ -6,7 +6,7 @@
   },
   "plugins": [
     {
-      "name": "plugin",
+      "name": "servicenow-tools",
       "source": {
         "source": "github",
         "repo": "kylburns89/mcp-server-servicenow"
